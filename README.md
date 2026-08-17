@@ -18,8 +18,8 @@ SAP2000 S2K／F2K 基礎整合檢視器與案例資料庫。
 目前的成對案例如下：
 
 - **工務大樓**
-  - 工務大樓_20260708_e_台電載重更新_model definition.s2k
-  - 工務大樓_20260708_e_台電載重更新_analysis results.s2k
+  - 工務大樓模型定義檔（2026-07-08 e 版）
+  - 工務大樓分析結果檔（2026-07-08 e 版）
 - **PR B**
   - S_PRB_REV A_251202-1_model definition.s2k
   - S_PRB_REV A_251202-1_analysis results.s2k
