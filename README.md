@@ -2,15 +2,17 @@
 
 SAP2000 S2K／F2K 基礎整合檢視器與案例資料庫。
 
-本 repository 目前包含單檔案版的 **S2K＋F2K 基礎整合檢視器 V4.15.5**，以及可用來
-測試模型定義與分析結果匯入的 SAP2000 S2K 案例。檢視器可直接在瀏覽器執行，不需要
-安裝 Node.js、Python 或建置工具。
+本 repository 目前包含單檔案版的 **S2K＋F2K 基礎整合檢視器 V4.15.5**、可由 Visual
+Studio 開啟的 Windows C＃桌面專案，以及可用來測試模型定義與分析結果匯入的 SAP2000
+S2K 案例。瀏覽器版可直接執行；桌面版則以 WPF＋WebView2 完整承載同一份檢視器。
 
 ## 內容
 
 | 路徑 | 說明 |
 | --- | --- |
 | S2K_F2K_基礎整合檢視器_V4.15.5.html | 單檔案瀏覽器版檢視器，版本 V4.15.5 |
+| StructLab.sln | Visual Studio 2022 解決方案 |
+| StructLab.Desktop/ | .NET 8 WPF 桌面應用程式；建置時將 HTML 複製為應用程式資產 |
 | 工務大樓/ | 工務大樓模型與分析結果案例 |
 | PR B/ | PR B 模型與分析結果案例 |
 | .gitattributes | 指定大型 S2K 檔案使用 Git LFS |
@@ -51,6 +53,16 @@ S2K_F2K_基礎整合檢視器_V4.15.5.html
 ~~~
 
 檢視器是單一 HTML 檔案，不需要啟動本機伺服器或執行建置指令。
+
+### 2.1 在 Visual Studio 執行 Windows 桌面版
+
+1. 在 Windows 安裝 Visual Studio 2022 的「.NET desktop development」工作負載。
+2. 開啟 `StructLab.sln`，將 `StructLab.Desktop` 設為啟始專案。
+3. 按 `F5` 建置並啟動；NuGet 會還原 WebView2 套件。
+4. 若系統未安裝 Microsoft Edge WebView2 Runtime，請依程式提示安裝後再啟動。
+
+桌面版會載入相同的 HTML，因此既有的模型匯入、3D 檢視、工程計算和 Excel 匯出皆可沿用。
+目前 Three.js 與 xlsx-js-style 仍由 CDN 載入，使用這兩項功能時需要網路。
 
 ### 3. 載入案例
 

@@ -1,0 +1,29 @@
+<Window x:Class="StructLab.Desktop.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        Title="S2K＋F2K 基礎整合檢視器"
+        Width="1440"
+        Height="900"
+        MinWidth="1024"
+        MinHeight="700"
+        WindowStartupLocation="CenterScreen"
+        ContentRendered="Window_ContentRendered">
+  <Grid>
+    <wv2:WebView2 x:Name="Viewer" />
+    <Border x:Name="LoadingOverlay"
+            Background="#FF14171C">
+      <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+        <TextBlock Foreground="#FFDDE3EC"
+                   FontSize="22"
+                   HorizontalAlignment="Center"
+                   Text="正在啟動 S2K＋F2K 基礎整合檢視器……" />
+        <TextBlock Margin="0,12,0,0"
+                   Foreground="#FF8A93A3"
+                   FontSize="14"
+                   HorizontalAlignment="Center"
+                   Text="首次啟動需要安裝 Microsoft Edge WebView2 Runtime。" />
+      </StackPanel>
+    </Border>
+  </Grid>
+</Window>
