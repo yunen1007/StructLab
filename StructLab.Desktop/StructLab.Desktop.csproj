@@ -5,25 +5,11 @@
     <UseWPF>true</UseWPF>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
     <AssemblyName>StructLab.Desktop</AssemblyName>
     <RootNamespace>StructLab.Desktop</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2903.40" />
-  </ItemGroup>
-
-  <!--
-    The original single-file viewer remains the source of truth.  Linking it
-    keeps the Windows application and browser version on exactly the same
-    feature set while copying it to the application's Assets folder at build.
-  -->
-  <ItemGroup>
-    <Content Include="..\S2K_F2K_基礎整合檢視器_V4.15.5.html">
-      <Link>Assets\index.html</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
+    <ProjectReference Include="..\StructLab.Core\StructLab.Core.csproj" />
   </ItemGroup>
 </Project>
