@@ -2,15 +2,18 @@
 
 SAP2000 S2K／F2K 基礎整合檢視器與案例資料庫。
 
-本 repository 目前包含單檔案版的 **S2K＋F2K 基礎整合檢視器 V4.15.5**，以及可用來
-測試模型定義與分析結果匯入的 SAP2000 S2K 案例。檢視器可直接在瀏覽器執行，不需要
-安裝 Node.js、Python 或建置工具。
+本 repository 目前包含單檔案版的 **S2K＋F2K 基礎整合檢視器 V4.15.5**、可由 Visual
+Studio 開啟的 Windows 原生 C＃桌面專案，以及可用來測試模型定義與分析結果匯入的 SAP2000
+S2K 案例。瀏覽器版可直接執行；桌面版則以 WPF 與 C＃類別庫獨立實作，不載入 HTML。
 
 ## 內容
 
 | 路徑 | 說明 |
 | --- | --- |
 | S2K_F2K_基礎整合檢視器_V4.15.5.html | 單檔案瀏覽器版檢視器，版本 V4.15.5 |
+| StructLab.sln | Visual Studio 2022 解決方案 |
+| StructLab.Core/ | .NET 8 C＃核心：S2K 解析、模型、斷面分類與載重彙整 |
+| StructLab.Desktop/ | .NET 8 原生 WPF 桌面應用程式，不含 WebView2／HTML 執行環境 |
 | 工務大樓/ | 工務大樓模型與分析結果案例 |
 | PR B/ | PR B 模型與分析結果案例 |
 | .gitattributes | 指定大型 S2K 檔案使用 Git LFS |
@@ -27,40 +30,94 @@ SAP2000 S2K／F2K 基礎整合檢視器與案例資料庫。
 模型定義檔與分析結果檔應使用同一個模型版本。若兩者的節點、桿件、載重案例或
 編號不一致，檢視器可能無法正確配對結果。
 
-## 快速開始
+## 使用 Visual Studio 執行 C＃桌面版
 
-### 1. 下載 repository
+### 1. 系統需求
 
-S2K 案例使用 Git LFS 儲存。使用 Git clone 時，請先安裝並啟用 Git LFS：
+桌面版是 Windows 的 WPF 應用程式，請使用 Windows 10／11 與 Visual Studio 2022。
+安裝 Visual Studio Community 即可，不需要 Unity。於 Visual Studio Installer 的「工作負載」
+選取 **.NET desktop development**，它會安裝建置 WPF 所需的 C＃與 .NET 工具；若 Visual
+Studio 已安裝，可按「Modify」補裝這個工作負載。
 
-~~~
+官方操作參考：
+
+- [安裝與修改 Visual Studio 工作負載](https://learn.microsoft.com/zh-tw/visualstudio/install/install-visual-studio?view=vs-2022)
+- [Visual Studio 中的 .NET desktop development 工作負載](https://learn.microsoft.com/en-us/visualstudio/ide/quickstart-ide-orientation?view=vs-2022)
+
+範例 S2K 檔以 Git LFS 儲存。若要下載完整案例，另請安裝 [Git LFS](https://git-lfs.com/)。
+
+### 2. 取得 `c#-test-1` 分支
+
+#### 方法 A：用 Git 指令列下載指定分支
+
+開啟 PowerShell 或 Git Bash，執行：
+
+~~~powershell
 git lfs install
-git clone https://github.com/yunen1007/StructLab.git
+git clone --branch c#-test-1 --single-branch https://github.com/yunen1007/StructLab.git
 cd StructLab
 git lfs pull
+git branch --show-current
 ~~~
 
-若只想使用檢視器，也可以直接下載並開啟 HTML 檔案。
+最後一行應顯示 `c#-test-1`。此方式只下載目前 C＃遷移中的分支，不會變更 `main` 的內容。
 
-### 2. 開啟檢視器
+#### 方法 B：完全使用 Visual Studio 下載
 
-使用 Chrome、Edge 或其他現代瀏覽器開啟：
+1. 開啟 Visual Studio，在起始畫面選擇「Clone a repository」。
+2. 在 Repository location 貼上 `https://github.com/yunen1007/StructLab.git`，選擇本機資料夾後按「Clone」。
+3. 開啟「Git」→「Manage Branches」，在遠端分支找到 `origin/c#-test-1`，按右鍵選擇「Checkout」。
+4. 若 Git LFS 尚未下載案例，於該 repository 的終端機執行 `git lfs pull`。
 
-~~~
+Visual Studio 的 Git clone 官方說明請見[這裡](https://learn.microsoft.com/zh-tw/visualstudio/version-control/git-clone-repository?view=vs-2022)。
+
+### 3. 開啟方案與建置
+
+1. 在 Visual Studio 選擇「Open a project or solution」。
+2. 選取 repository 根目錄的 `StructLab.sln`。
+3. Solution Explorer 應可看到兩個專案：
+   - `StructLab.Core`：S2K 解析與工程計算核心。
+   - `StructLab.Desktop`：WPF 桌面使用者介面。
+4. 在 `StructLab.Desktop` 按右鍵，選擇「Set as Startup Project」。
+5. 按 `Ctrl`＋`Shift`＋`B` 建置方案。
+6. 建置成功後按 `F5` 啟動偵錯，或按 `Ctrl`＋`F5` 啟動但不偵錯。
+
+若出現缺少 .NET 或 Windows SDK 的錯誤，開啟 Visual Studio Installer，對目前安裝按「Modify」，
+確認已選取 **.NET desktop development** 後重新建置。
+
+### 4. 匯入範例模型並確認程式可執行
+
+1. 在程式頂端按「匯入 S2K 檔案」。
+2. 選擇模型定義檔，例如：
+   - `工務大樓/工務大樓_20260708_e_model definition.s2k`。
+   - `PR B/S_PRB_REV A_251202-1_model definition.s2k`。
+3. 成功後可檢視：
+   - 模型總覽中的節點與桿件資料。
+   - 模型平面預覽中的 XY 線框。
+   - 原始 S2K 表格與 CSV 匯出。
+   - 台灣鋼結構斷面分類。
+   - 重力載重彙整。
+
+目前 C＃版讀取的是 **Model Definition S2K**。Analysis Results S2K、F2K／SAFE、基礎穩定、
+柱墩 P-M、強柱弱梁、完整 3D 與 Excel 計算書尚在移植中，詳細狀態見 [MIGRATION.md](MIGRATION.md)。
+
+### 5. 確認桌面版不依賴 HTML
+
+`StructLab.Desktop.csproj` 只參考 `StructLab.Core.csproj`；它沒有 WebView2、HTML、JavaScript
+或 CDN 依賴。C＃版執行時不會載入 `S2K_F2K_基礎整合檢視器_V4.15.5.html`。
+
+在尚未完成所有模組的數值驗證前，請**不要刪除** HTML；它目前是原功能和計算結果的比對基準。
+待 [MIGRATION.md](MIGRATION.md) 中所有項目完成且案例比對通過後，才適合從發行版本移除它。
+
+## 使用瀏覽器執行舊版 HTML
+
+若要使用目前功能最完整的舊版檢視器，可用 Chrome、Edge 或其他現代瀏覽器直接開啟：
+
+~~~text
 S2K_F2K_基礎整合檢視器_V4.15.5.html
 ~~~
 
-檢視器是單一 HTML 檔案，不需要啟動本機伺服器或執行建置指令。
-
-### 3. 載入案例
-
-1. 將 **Model Definition S2K** 拖放到首頁，或按一下檔案區選取。
-2. 等待模型、載重與表格完成解析。
-3. 在計算模組中匯入對應的第二個 **Analysis Results S2K**。
-4. 依需要檢視 3D 模型、表格、載重、桿件結果、柱底反力、層間位移與基礎／柱墩計算。
-
-檢視器目前以 Tonf, m, °C 作為主要顯示單位。若匯出的 S2K 單位不符，建議先在
-SAP2000 內切換到正確單位後重新匯出，不要直接以文字修改數值。
+此瀏覽器版與 C＃桌面版是獨立程式。舊版支援更多計算模組，但並不是 C＃移植版的執行依賴。
 
 ## 支援範圍
 
