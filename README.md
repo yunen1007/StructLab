@@ -6,6 +6,36 @@ SAP2000 S2K／F2K 基礎整合檢視器與案例資料庫。
 Studio 開啟的 Windows 原生 C＃桌面專案，以及可用來測試模型定義與分析結果匯入的 SAP2000
 S2K 案例。瀏覽器版可直接執行；桌面版則以 WPF 與 C＃類別庫獨立實作，不載入 HTML。
 
+## 公司 Windows 電腦的 AI agent 接手入口
+
+新的 AI agent 不應直接從程式碼猜測進度。請先依序完整閱讀：
+
+1. [`AGENTS.md`](AGENTS.md)：分支、架構、禁止事項與驗證規範。
+2. [`HANDOFF_WINDOWS_3D.md`](HANDOFF_WINDOWS_3D.md)：本輪原生 3D 雛形的建置步驟、已知風險、
+   手動驗收清單與效能紀錄表。
+3. [`DEPENDENCIES.md`](DEPENDENCIES.md)：Windows 必要環境、尚未還原的 NuGet 套件與固定版本。
+4. [`MIGRATION.md`](MIGRATION.md)：已完成及尚未移植功能的唯一狀態清單。
+
+接手後先執行下列唯讀檢查，不要立即改動程式：
+
+~~~powershell
+git status -sb
+git branch --show-current
+~~~
+
+目前 C＃遷移分支應為 `c#-test-1`。接著依 `HANDOFF_WINDOWS_3D.md` 執行套件還原、建置、單元
+測試、WPF 啟動與工務大樓案例的 3D 手動驗收。若編譯失敗，先保留完整的第一個錯誤，再核對
+HelixToolkit 3.1.2 API；只做最小修正，不要改成 WebView2，也不要載入或執行 HTML／JavaScript。
+
+可直接交給公司 AI agent 的任務文字：
+
+> 請先完整閱讀根目錄的 `AGENTS.md`、`HANDOFF_WINDOWS_3D.md`、`DEPENDENCIES.md` 與
+> `MIGRATION.md`。確認目前位於 `c#-test-1` 分支並執行 `git status -sb`。依交接日誌在 Windows
+> 還原套件、建置 `StructLab.sln`、執行全部測試，再以工務大樓 Model Definition S2K 驗證拖放
+> 匯入、3D 旋轉／平移／縮放、視角切換、桿件點選與效能。將實際結果回填
+> `HANDOFF_WINDOWS_3D.md`，並同步更新 `MIGRATION.md`。不可使用 WebView2、HTML 或 JavaScript
+> 取代原生 C＃功能；未經指示不要提交或上傳。
+
 ## 內容
 
 | 路徑 | 說明 |
