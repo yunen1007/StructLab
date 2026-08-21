@@ -11,5 +11,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\StructLab.Core\StructLab.Core.csproj" />
+    <PackageReference Include="HelixToolkit.Wpf.SharpDX" Version="3.1.2" />
   </ItemGroup>
 </Project>

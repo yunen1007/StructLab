@@ -23,12 +23,16 @@ WebView2 呼叫。不要用「WPF／WebView2 外殼」宣稱功能已移植完�
 | `StructLab.sln` | Visual Studio 解決方案。 |
 | `StructLab.Core/` | .NET 8 跨介面 C＃核心；放置解析器、資料模型與純計算服務。 |
 | `StructLab.Desktop/` | .NET 8 Windows WPF 原生桌面程式；只處理 UI、檔案選取與結果呈現。 |
+| `StructLab.Core.Tests/` | Core 場景與計算服務的 .NET 8 單元測試。 |
 | `MIGRATION.md` | 移植完成度與模組優先順序的唯一狀態清單；功能變更時必須同步更新。 |
+| `DEPENDENCIES.md` | SDK、NuGet 版本、未還原狀態與 Windows 必要環境。 |
+| `HANDOFF_WINDOWS_3D.md` | 原生 3D 雛形的 Windows 建置、測試、風險與效能交接日誌。 |
 | `S2K_F2K_基礎整合檢視器_V4.15.5.html` | 舊版行為參考與數值比對來源，不是 C＃執行期資產。 |
 | `工務大樓/`、`PR B/` | 用於解析與計算結果比對的實際 S2K 案例。大型檔案使用 Git LFS。 |
 
-`StructLab.Desktop.csproj` 只應參考 `StructLab.Core.csproj`。不要重新加入 WebView2、
-Three.js、JavaScript、HTML 或 CDN 相依性。
+`StructLab.Desktop.csproj` 只應有 `StructLab.Core.csproj` 專案參考。原生 GPU 3D 使用
+`HelixToolkit.Wpf.SharpDX 3.1.2` NuGet 套件。不要加入 WebView2、Three.js、JavaScript、
+HTML 或 CDN 相依性。
 
 ## 已完成的 C＃移植範圍
 
@@ -39,7 +43,10 @@ Three.js、JavaScript、HTML 或 CDN 相依性。
 - S2K 模型建立、材料與載重資料讀取。
 - 台灣鋼結構四級斷面分類：`Services/SectionClassificationService.cs`。
 - 面載重、桿件分布載重與桿件自重彙整：`Services/LoadSummaryService.cs`。
-- WPF 的 S2K 匯入、原始資料表瀏覽、CSV 匯出與 XY 線框預覽：`StructLab.Desktop/MainWindow.*`。
+- WPF 的 S2K 按鈕／拖放匯入、背景解析、原始資料表瀏覽與 CSV 匯出：`StructLab.Desktop/MainWindow.*`。
+- 原生 DirectX 11 GPU 線框、相機視角與桿件點選雛形：`RenderSceneBuilder`、
+  `ScenePickingService`、`HelixSceneAdapter` 與 `MainWindow.*`。目前尚待 Windows 還原、
+  建置與手動效能驗證，詳見 `HANDOFF_WINDOWS_3D.md`。
 
 不要把「已完成」理解為 HTML 所有功能已移植。完整差距必須以 `MIGRATION.md` 為準。
 
@@ -55,6 +62,9 @@ Three.js、JavaScript、HTML 或 CDN 相依性。
 6. Excel 計算書、專案儲存、彙整報表與 PDF。
 
 若使用者指定其他模組，以使用者優先順序為準。
+
+目前使用者已指定先完成並在公司 Windows 電腦驗證原生 3D 雛形。下一位 agent 應先依
+`HANDOFF_WINDOWS_3D.md` 處理實際編譯錯誤與手動驗收，再回到上述功能順序。
 
 ## 實作規範
 

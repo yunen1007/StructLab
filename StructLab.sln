@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StructLab.Desktop", "Struct
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StructLab.Core", "StructLab.Core\StructLab.Core.csproj", "{C1D0A2E9-0D88-4F21-A80D-A8CB5C2A9887}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StructLab.Core.Tests", "StructLab.Core.Tests\StructLab.Core.Tests.csproj", "{A94F112D-2664-4BE8-90D7-CA8DDC7783B0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,6 +22,10 @@ Global
 		{C1D0A2E9-0D88-4F21-A80D-A8CB5C2A9887}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1D0A2E9-0D88-4F21-A80D-A8CB5C2A9887}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1D0A2E9-0D88-4F21-A80D-A8CB5C2A9887}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A94F112D-2664-4BE8-90D7-CA8DDC7783B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A94F112D-2664-4BE8-90D7-CA8DDC7783B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A94F112D-2664-4BE8-90D7-CA8DDC7783B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A94F112D-2664-4BE8-90D7-CA8DDC7783B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

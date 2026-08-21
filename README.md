@@ -13,7 +13,10 @@ S2K 案例。瀏覽器版可直接執行；桌面版則以 WPF 與 C＃類別庫
 | S2K_F2K_基礎整合檢視器_V4.15.5.html | 單檔案瀏覽器版檢視器，版本 V4.15.5 |
 | StructLab.sln | Visual Studio 2022 解決方案 |
 | StructLab.Core/ | .NET 8 C＃核心：S2K 解析、模型、斷面分類與載重彙整 |
-| StructLab.Desktop/ | .NET 8 原生 WPF 桌面應用程式，不含 WebView2／HTML 執行環境 |
+| StructLab.Core.Tests/ | Core 場景服務的 xUnit 單元測試 |
+| StructLab.Desktop/ | .NET 8 原生 WPF 桌面應用程式與 DirectX 11 3D，不含 WebView2／HTML 執行環境 |
+| DEPENDENCIES.md | 未安裝／未還原的 SDK、NuGet 套件與固定版本 |
+| HANDOFF_WINDOWS_3D.md | 公司 Windows 電腦的建置、手動驗收與效能交接日誌 |
 | 工務大樓/ | 工務大樓模型與分析結果案例 |
 | PR B/ | PR B 模型與分析結果案例 |
 | .gitattributes | 指定大型 S2K 檔案使用 Git LFS |
@@ -75,36 +78,43 @@ Visual Studio 的 Git clone 官方說明請見[這裡](https://learn.microsoft.c
 
 1. 在 Visual Studio 選擇「Open a project or solution」。
 2. 選取 repository 根目錄的 `StructLab.sln`。
-3. Solution Explorer 應可看到兩個專案：
+3. Solution Explorer 應可看到三個專案：
    - `StructLab.Core`：S2K 解析與工程計算核心。
    - `StructLab.Desktop`：WPF 桌面使用者介面。
+   - `StructLab.Core.Tests`：Core 單元測試。
 4. 在 `StructLab.Desktop` 按右鍵，選擇「Set as Startup Project」。
 5. 按 `Ctrl`＋`Shift`＋`B` 建置方案。
 6. 建置成功後按 `F5` 啟動偵錯，或按 `Ctrl`＋`F5` 啟動但不偵錯。
+
+第一次建置會依專案檔還原 `HelixToolkit.Wpf.SharpDX 3.1.2` 與測試套件。完整版本與未還原
+狀態見 [DEPENDENCIES.md](DEPENDENCIES.md)。
 
 若出現缺少 .NET 或 Windows SDK 的錯誤，開啟 Visual Studio Installer，對目前安裝按「Modify」，
 確認已選取 **.NET desktop development** 後重新建置。
 
 ### 4. 匯入範例模型並確認程式可執行
 
-1. 在程式頂端按「匯入 S2K 檔案」。
+1. 在程式頂端按「匯入 S2K 檔案」，或從 Windows 檔案總管把檔案拖入主視窗。
 2. 選擇模型定義檔，例如：
    - `工務大樓/工務大樓_20260708_e_model definition.s2k`。
    - `PR B/S_PRB_REV A_251202-1_model definition.s2k`。
 3. 成功後可檢視：
    - 模型總覽中的節點與桿件資料。
-   - 模型平面預覽中的 XY 線框。
+   - 原生 3D 中的線框、視角切換、旋轉、平移、縮放與桿件點選屬性。
    - 原始 S2K 表格與 CSV 匯出。
    - 台灣鋼結構斷面分類。
    - 重力載重彙整。
 
 目前 C＃版讀取的是 **Model Definition S2K**。Analysis Results S2K、F2K／SAFE、基礎穩定、
-柱墩 P-M、強柱弱梁、完整 3D 與 Excel 計算書尚在移植中，詳細狀態見 [MIGRATION.md](MIGRATION.md)。
+柱墩 P-M、強柱弱梁、3D 篩選／圖例／結果彩圖與 Excel 計算書尚在移植中，詳細狀態見
+[MIGRATION.md](MIGRATION.md)。原生 3D 第一輪 Windows 測試方式見
+[HANDOFF_WINDOWS_3D.md](HANDOFF_WINDOWS_3D.md)。
 
 ### 5. 確認桌面版不依賴 HTML
 
-`StructLab.Desktop.csproj` 只參考 `StructLab.Core.csproj`；它沒有 WebView2、HTML、JavaScript
-或 CDN 依賴。C＃版執行時不會載入 `S2K_F2K_基礎整合檢視器_V4.15.5.html`。
+`StructLab.Desktop.csproj` 的唯一專案參考是 `StructLab.Core.csproj`，另以 NuGet 引用原生
+DirectX 11 3D 套件；它沒有 WebView2、HTML、JavaScript 或 CDN 依賴。C＃版執行時不會載入
+`S2K_F2K_基礎整合檢視器_V4.15.5.html`。
 
 在尚未完成所有模組的數值驗證前，請**不要刪除** HTML；它目前是原功能和計算結果的比對基準。
 待 [MIGRATION.md](MIGRATION.md) 中所有項目完成且案例比對通過後，才適合從發行版本移除它。
