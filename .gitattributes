@@ -1,3 +1,4 @@
 工務大樓/*_analysis[[:space:]]results.s2k filter=lfs diff=lfs merge=lfs -text
 PR[[:space:]]B/*.s2k filter=lfs diff=lfs merge=lfs -text
 工務大樓/*_model[[:space:]]definition.s2k filter=lfs diff=lfs merge=lfs -text
+*.s2k filter=lfs diff=lfs merge=lfs -text
