@@ -1,5 +1,12 @@
 # StructLab 協作交接指示
 
+## 目前分支的優先交接
+
+使用者已於 2026－09－08 將目前工作改為 Google Apps Script，分支為 `GAS-test`。
+此分支先依 `HANDOFF_GAS.md` 與 `MIGRATION.md` 接續；下列 C＃指示保留供原生桌面分支參考，
+不要因此切回 C＃或覆蓋現有 GAS 工作。GAS 已實作範圍以 `MIGRATION.md` 為準，
+包含解析、模型瀏覽、斷面與載重及矩形柱墩 P－M；本機１０項測試與線上示範／P－M 已驗證。
+
 ## 專案目標
 
 將 `S2K_F2K_基礎整合檢視器_V4.15.5.html` 的功能逐步移植為可在 Visual Studio 中建置與

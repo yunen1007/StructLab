@@ -17,6 +17,8 @@
 
 ## 使用方式
 
+[開啟 StructLab 試用版](https://script.google.com/macros/s/AKfycbxmoUldcyhtiXr41nnlDxKDjtcuGVdvXLffTpSytgAzY7RtDXMPGm6Qh4tdtiua7AWl/exec)。2026－09－08 已驗證既有第２版的示範模型與五組 P－M 線上計算；完整驗收範圍見交接檔。
+
 開啟部署網址，先按「載入示範模型」，再匯入自己的 S2K／F2K。模型工作區支援旋轉、平移、縮放、平立面切換、樓層與斷面篩選、點選桿件。原始表格可搜尋、翻頁及下載 CSV。
 
 「斷面與載重」自動呈現伺服器計算；目前工程計算限 `Tonf, m, C`。SAFE F2K 先支援幾何與表格，不假設單位換算或提供尚未完成的計算。
