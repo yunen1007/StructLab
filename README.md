@@ -43,7 +43,7 @@ node --test tests/parity.test.cjs
 
 **若你把 `gas/*.gs` 推到公開 Git repository，算法也會公開，GAS 無法保護 Git 裡的副本。** 私有 branch 並非一般 GitHub 公開 repository 的保密機制；要保護原始碼，應使用私有 repository，並限制 GAS 專案編輯權。
 
-此程式不呼叫 Drive、Sheets、Gmail 或其他帳戶服務，沒有持久化、共享模型清單或對外 fetch。單次限制 8 MiB、150,000 列；幾何上限 40,000 節點、50,000 桿件、20,000 面元素。這是應用程式限制，並非 Google 保證的容量。公開使用仍會消耗部署帳戶的 Apps Script 配額。
+此程式不呼叫 Drive、Sheets、Gmail 或其他帳戶服務，沒有持久化、共享模型清單或對外 fetch。本程式不設定模型／專案檔案大小、資料列或幾何數量上限；實際容量仍受 GAS 執行時間、傳輸及瀏覽器記憶體影響，並非無限容量。公開使用仍會消耗部署帳戶的 Apps Script 配額。
 
 Google 代管可減少自架主機維護，但不是全面防攻擊保證。官方參考：[Web Apps](https://developers.google.com/apps-script/guides/web)、[配額](https://developers.google.com/apps-script/guides/services/quotas)、[私有伺服器函式](https://developers.google.com/apps-script/guides/html/communication#private_functions)。
 

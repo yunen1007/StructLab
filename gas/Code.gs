@@ -7,8 +7,6 @@ function doGet() {
 function analyzeModel(request) {
   if (!request || typeof request.text !== 'string') throw new Error('請提供 S2K／F2K 文字檔。');
   const text = request.text;
-  if (text.length > 8 * 1024 * 1024 || Utilities.newBlob(text).getBytes().length > 8 * 1024 * 1024)
-    throw new Error('單次匯入上限為 8 MiB，請分別匯出模型定義與分析結果。');
   if (/^version https:\/\/git-lfs.github.com\/spec/m.test(text)) throw new Error('這是 Git LFS 指標，請先下載真正的模型檔。');
   const tables = parseTables_(text);
   const safe = !!tables['POINT OBJECT CONNECTIVITY'];
@@ -16,8 +14,6 @@ function analyzeModel(request) {
   const model = legacyModel_(source);
   const warnings = [];
   validateModel_(model, source);
-  if (Object.keys(model.joints).length > 40000 || model.frames.length > 50000 || model.areas.length > 20000)
-    throw new Error('模型超過此版上限：40,000 節點／50,000 桿件／20,000 面元素。');
   const supportedUnits = /^tonf\s*,\s*m\s*,/i.test(model.units);
   const sections = Object.keys(model.sections).map(name => ({name, ...legacyClassification_(model,name)}));
   let loads = null;
@@ -36,7 +32,7 @@ function analyzeModel(request) {
 }
 
 function parseTables_(text) {
-  const tables=Object.create(null); let cur=null,buf='',rows=0;
+  const tables=Object.create(null); let cur=null,buf='';
   const forbidden=new Set(['__proto__','prototype','constructor']);
   function read(line) {
     line=line.trim(); if(!line) return;
@@ -47,7 +43,7 @@ function parseTables_(text) {
     const rec=Object.create(null), rx=/(?:"([^"]+)"|([A-Za-z0-9_#$?.\-]+))\s*=\s*(?:"((?:[^"]|"")*)"|(\S+))/g;
     let m;
     while((m=rx.exec(line))){const k=m[1]||m[2],v=m[3]!==undefined?m[3].replace(/""/g,'"'):m[4];if(forbidden.has(k)||forbidden.has(v))throw new Error('不合法的欄位或識別碼。');rec[k]=v;}
-    if(Object.keys(rec).length){cur.push(rec);if(++rows>150000)throw new Error('資料超過 150,000 列上限。');}
+    if(Object.keys(rec).length)cur.push(rec);
   }
   for(const line of text.replace(/^\uFEFF/,'').split(/\r\n|\n|\r/)){
     const t=line.trimEnd();
