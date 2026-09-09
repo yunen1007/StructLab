@@ -22,7 +22,7 @@
 'use strict';
 const $=id=>document.getElementById(id);let result=null,source='',sourceName='',pmResult=null,page=0,busy=false,sectionRows=[],loadRows=[];
 function status(msg,error=false){$('status').textContent=msg;$('status').classList.toggle('error',error);}
-function setBusy(on){busy=on;for(const id of ['demo','importText','runPM','modelFile','projectFile'])$(id).disabled=on;}
+function setBusy(on){busy=on;for(const id of ['demo','importText','runPM','modelFile','projectFile','saveProject'])$(id).disabled=on;for(const field of $('pmForm').querySelectorAll('input,textarea'))field.disabled=on;}
 async function rpc(name,payload){if(!window.google?.script?.run)throw new Error('此頁必須從 GAS 部署網址開啟才能計算。');return new Promise((resolve,reject)=>google.script.run.withSuccessHandler(resolve).withFailureHandler(e=>reject(new Error(e.message||String(e))))[name](payload));}
 async function action(fn){if(busy)return;setBusy(true);try{await fn();}catch(e){status(e.message,true);}finally{setBusy(false);}}
 function table(target,headers,rows){const t=document.createElement('table'),head=t.createTHead().insertRow();for(const h of headers){const th=document.createElement('th');th.textContent=h;head.append(th);}const body=t.createTBody();for(const row of rows){const tr=body.insertRow();for(const v of row){const td=tr.insertCell();td.textContent=typeof v==='number'?Number(v.toPrecision(8)):String(v??'');}}$(target).replaceChildren(t);}
@@ -57,7 +57,29 @@ $('pmForm').onsubmit=e=>{e.preventDefault();action(async()=>{status('正在伺�
 function drawPM(){const size=canvasSize('pmCanvas');if(!size)return;const {ctx,w,h}=size;ctx.clearRect(0,0,w,h);if(!pmResult)return;const all=[...pmResult.x.drawPoints,...pmResult.y.drawPoints];const maxM=Math.max(...all.map(p=>p.mu),1)*1.1,minP=Math.min(...all.map(p=>p.pu)),maxP=Math.max(...all.map(p=>p.pu));const x=m=>55+m/maxM*(w-80),y=p=>h-35-(p-minP)/(maxP-minP)*(h-60);ctx.font='12px system-ui';ctx.fillStyle='#adbfce';ctx.strokeStyle='#334a60';ctx.lineWidth=1;for(let i=0;i<=4;i++){const p=minP+(maxP-minP)*i/4;ctx.beginPath();ctx.moveTo(55,y(p));ctx.lineTo(w-20,y(p));ctx.stroke();ctx.fillText(p.toFixed(0),6,y(p)+4);}ctx.fillText('Pu（tf）',8,15);ctx.fillText('φMn（tf·m）',w-110,h-5);for(let i=0;i<=4;i++)ctx.fillText((maxM*i/4).toFixed(0),x(maxM*i/4)-10,h-15);for(const [curve,color] of [[pmResult.x,'#71d8c0'],[pmResult.y,'#e8b36b']]){ctx.strokeStyle=color;ctx.lineWidth=2;ctx.beginPath();curve.drawPoints.forEach((p,i)=>{if(i)ctx.lineTo(x(p.mu),y(p.pu));else ctx.moveTo(x(p.mu),y(p.pu));});ctx.stroke();}}
 $('pmCsv').onclick=()=>csv('StructLab-PM.csv',pmHeads,pmRows());
 $('saveProject').onclick=()=>{try{download('StructLab-project.json',JSON.stringify({schema:'structlab-gas-project',version:1,name:sourceName,text:source,pm:pmInput()},null,2),'application/json');status('已下載專案輸入；計算結果會在重新開啟時重算。');}catch(e){status(e.message,true);}};
-$('projectFile').onchange=e=>action(async()=>{const f=e.target.files[0];if(!f)return;const p=JSON.parse(await f.text());if(p.schema!=='structlab-gas-project'||p.version!==1||typeof p.text!=='string')throw new Error('不是此版本的 StructLab GAS 專案檔。');if(p.pm){for(const [id] of pmDefs)if(p.pm[id]!==undefined)$('pm-'+id).value=p.pm[id];if(Array.isArray(p.pm.forces))$('forces').value=p.pm.forces.map(f=>[f.p,f.mx,f.my].join(', ')).join('\n');pmResult=null;$('pmTable').replaceChildren();$('pmNotice').textContent='已還原輸入，請重新計算。';drawPM();}if(p.text)await importModel(p.text,p.name||'專案模型');else status('已開啟專案輸入，請計算 P－M。');});
+async function openProject(p){
+  if(!p||p.schema!=='structlab-gas-project'||p.version!==1||typeof p.text!=='string')throw new Error('不是此版本的 StructLab GAS 專案檔。');
+  // Validate and calculate before committing any visible project state.
+  const nextPM=p.pm;
+  if(!nextPM||typeof nextPM!=='object'||Array.isArray(nextPM)||!Array.isArray(nextPM.forces))throw new Error('專案缺少有效的 P－M 輸入。');
+  for(const [id] of pmDefs)if(!['number','string'].includes(typeof nextPM[id])||String(nextPM[id]).trim()===''||!Number.isFinite(Number(nextPM[id])))throw new Error('專案 P－M 欄位無效：'+id);
+  for(const f of nextPM.forces)if(!f||['p','mx','my'].some(k=>!['number','string'].includes(typeof f[k])||String(f[k]).trim()===''||!Number.isFinite(Number(f[k]))))throw new Error('專案載重列必須包含有限數值 Pu、Mux、Muy。');
+  const name=typeof p.name==='string'?p.name:'專案模型';
+  const nextModel=p.text?await rpc('analyzeModel',{text:p.text,name}):null;
+  source=p.text;sourceName=name;result=nextModel;page=0;
+  for(const [id] of pmDefs)$('pm-'+id).value=nextPM[id];
+  $('forces').value=nextPM.forces.map(f=>[f.p,f.mx,f.my].join(', ')).join('\n');
+  pmResult=null;$('pmTable').replaceChildren();$('pmNotice').textContent='已還原輸入，請重新計算。';drawPM();
+  if(result)renderModel();
+  else{
+    $('modelName').textContent='尚未匯入模型';$('stats').replaceChildren();$('warnings').textContent='';
+    $('selection').textContent='點選３Ｄ中的桿件。';
+    options('floor',[],'全部樓層');options('sectionFilter',[],'全部斷面');options('tableSelect',[]);
+    sectionRows=[];loadRows=[];table('sectionTable',sectionHeads,[]);table('loadTable',loadHeads,[]);renderTable();fit();
+  }
+  status('已開啟專案輸入，請重新計算 P－M。');
+}
+$('projectFile').onchange=e=>action(async()=>{const f=e.target.files[0];if(f)await openProject(JSON.parse(await f.text()));});
 const demoText=`TABLE: "PROGRAM CONTROL"
 ProgramName=SAP2000 Version=27.1.0 CurrUnits="Tonf, m, C"
 TABLE: "JOINT COORDINATES"

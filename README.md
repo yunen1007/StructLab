@@ -29,7 +29,7 @@
 
 ## 本機驗證
 
-需要 Node.js 22，沒有 npm 或 NuGet 相依套件：
+算法回歸需要 Node.js 22，不需額外套件：
 
 ```sh
 node --test tests/parity.test.cjs
@@ -48,3 +48,15 @@ node --test tests/parity.test.cjs
 Google 代管可減少自架主機維護，但不是全面防攻擊保證。官方參考：[Web Apps](https://developers.google.com/apps-script/guides/web)、[配額](https://developers.google.com/apps-script/guides/services/quotas)、[私有伺服器函式](https://developers.google.com/apps-script/guides/html/communication#private_functions)。
 
 本工具不取代正式分析、設計審查或工程簽證。
+
+## 本機瀏覽器整合驗證
+
+新增 `tests/browser.test.cjs`，使用 Playwright 1.60.0 與已安裝的 Google Chrome，執行：
+
+```sh
+node --test tests/browser.test.cjs
+```
+
+Playwright 僅用於開發測試，不會部署到 GAS。本次使用環境既有的套件，未安裝新套件。測試在 loopback HTTP 提供原始 `gas/Index.html`，以測試專用 RPC bridge 呼叫 Node VM 裡的真實 `.gs` 函式；驗證專案 JSON 往返、失敗時狀態保留、純 P－M 專案清除舊模型、CSV 實際內容、分頁與 P－M 錯誤恢復。這不是 GAS 線上／匿名訪客驗證。
+
+２０２６－０９－０９：算法１１項與瀏覽器整合１項通過。修正與完整驗收限制見交接文件。
